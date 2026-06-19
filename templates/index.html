@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Tiverton Civic Intelligence — Ask a Question{% endblock %}
+
+{% block content %}
+
+<!-- Search card -->
+<div class="card">
+  <div class="card-title">Ask about Tiverton local government</div>
+  <form method="get" action="/">
+    <div class="search-wrap">
+      <input
+        type="text"
+        name="q"
+        value="{{ question | e }}"
+        placeholder="e.g. Are there any upcoming zoning changes for multi-family housing?"
+        autocomplete="off"
+        autofocus
+      />
+      <button class="btn-ask" type="submit">Ask</button>
+    </div>
+  </form>
+  <p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem;">
+    Answers are generated using only the pre-loaded Tiverton meeting records below.
+    Every claim will cite the governing body and meeting date.
+  </p>
+</div>
+
+{% if error %}
+<div class="alert-error">{{ error }}</div>
+{% endif %}
+
+{% if answer %}
+<!-- Answer -->
+<div class="answer-label">Answer</div>
+<div class="answer-box">{{ answer }}</div>
+
+<!-- Sources -->
+{% if sources %}
+<div class="section-label">Sources retrieved ({{ sources | length }})</div>
+{% for src in sources %}
+<div class="source-card">
+  <div class="src-meta">
+    Tiverton {{ src.governing_body }} &bull; {{ src.meeting_date }}
+  </div>
+  {% if src.heading %}
+  <div class="src-heading">{{ src.heading }}</div>
+  {% endif %}
+  <div class="src-body">{{ src.body[:280] }}{% if src.body | length > 280 %}…{% endif %}</div>
+  <div style="margin-top:0.5rem;">
+    <a href="/document/{{ src.document_id }}">View full document &rarr;</a>
+    {% if src.source_url %}
+    &nbsp;&bull;&nbsp;
+    <a href="{{ src.source_url }}" target="_blank" rel="noopener">Official source</a>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="disclaimer">
+  Answers are based exclusively on the meeting minutes shown below. This tool is a portfolio
+  demonstration — always verify civic information against official municipal records at
+  <a href="https://www.tiverton.ri.gov" target="_blank" rel="noopener">tiverton.ri.gov</a>.
+</div>
+{% endif %}
+
+<!-- Document index -->
+<div class="section-label" style="margin-top:{% if answer %}2rem{% else %}0.5rem{% endif %};">
+  Loaded documents ({{ documents | length }})
+</div>
+<div class="card" style="padding:0;">
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Governing Body</th>
+        <th>Title</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in documents %}
+      <tr>
+        <td style="white-space:nowrap;">{{ d.meeting_date }}</td>
+        <td>{{ d.governing_body }}</td>
+        <td><a href="/document/{{ d.id }}">{{ d.title }}</a></td>
+        <td><span class="tag">{{ d.doc_type }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

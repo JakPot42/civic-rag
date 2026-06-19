@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: civic-rag
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DEMO_MODE
+        value: "False"
+      - key: ANTHROPIC_API_KEY
+        sync: false

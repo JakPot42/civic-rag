@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.title }} — Tiverton Civic Intelligence{% endblock %}
+
+{% block content %}
+
+<p style="font-size:0.85rem;margin-bottom:1rem;">
+  <a href="/" style="color:var(--blue);text-decoration:none;">&larr; Back to search</a>
+</p>
+
+<div class="card">
+  <div class="card-title">{{ doc.doc_type | upper }}</div>
+  <h1 style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:0.75rem;">
+    {{ doc.title }}
+  </h1>
+
+  <table style="font-size:0.85rem;border-collapse:collapse;width:100%;">
+    <tr>
+      <td style="padding:0.3rem 1rem 0.3rem 0;color:var(--muted);white-space:nowrap;font-weight:600;">Municipality</td>
+      <td style="padding:0.3rem 0;">{{ doc.municipality }}, {{ doc.state }}</td>
+    </tr>
+    <tr>
+      <td style="padding:0.3rem 1rem 0.3rem 0;color:var(--muted);white-space:nowrap;font-weight:600;">Governing Body</td>
+      <td style="padding:0.3rem 0;">{{ doc.governing_body }}</td>
+    </tr>
+    <tr>
+      <td style="padding:0.3rem 1rem 0.3rem 0;color:var(--muted);white-space:nowrap;font-weight:600;">Meeting Date</td>
+      <td style="padding:0.3rem 0;">{{ doc.meeting_date }}</td>
+    </tr>
+    {% if doc.source_url %}
+    <tr>
+      <td style="padding:0.3rem 1rem 0.3rem 0;color:var(--muted);white-space:nowrap;font-weight:600;">Official Source</td>
+      <td style="padding:0.3rem 0;">
+        <a href="{{ doc.source_url }}" target="_blank" rel="noopener"
+           style="color:var(--blue);">{{ doc.source_url }}</a>
+      </td>
+    </tr>
+    {% endif %}
+  </table>
+</div>
+
+<div class="section-label">Meeting content ({{ chunks | length }} sections)</div>
+
+{% for chunk in chunks %}
+<div class="chunk-block">
+  {% if chunk.heading %}
+  <div class="chunk-heading">{{ chunk.heading }}</div>
+  {% endif %}
+  <div class="chunk-body">{{ chunk.body }}</div>
+</div>
+{% endfor %}
+
+<div class="disclaimer">
+  This document is pre-seeded for demonstration purposes. Verify all information against
+  official Tiverton records at
+  <a href="https://www.tiverton.ri.gov" target="_blank" rel="noopener">tiverton.ri.gov</a>.
+</div>
+
+{% endblock %}
