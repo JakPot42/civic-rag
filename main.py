@@ -3,6 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
@@ -33,14 +36,24 @@ async def lifespan(app: FastAPI):
     yield
 
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Tiverton Civic Intelligence", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+_MAX_QUERY_CHARS = 500
 
 @app.get("/", response_class=HTMLResponse)
+@limiter.limit("20/minute")
 async def index(request: Request, q: str = ""):
     answer = None
     sources: list[dict] = []
     error = None
+
+    if len(q) > _MAX_QUERY_CHARS:
+        error = f"Query too long ({len(q):,} chars). Maximum is {_MAX_QUERY_CHARS} characters."
+        q = ""
 
     if q.strip():
         idx = _get_index()
