@@ -102,10 +102,10 @@ config.py       DEMO_MODE, BM25 parameters, chunk size, top-K
 ## Key Architecture Decisions
 
 **Why BM25 over vector embeddings:**
-The corpus is hyperlocal civic text — "Stafford Road," "Crandall Road," "FY2024 budget allocation." BM25 retrieves these keyword matches reliably without a sentence-transformer model download (60–500 MB depending on the model) or an ONNX runtime. Same decision as Portfolio RAG (P41) and for the same reason: keyword-heavy technical text where BM25 is competitive with or better than cosine similarity on sparse corpora.
+The corpus is hyperlocal civic text — "Stafford Road," "Crandall Road," "FY2024 budget allocation." BM25 retrieves these keyword matches reliably without a sentence-transformer model download (60–500 MB depending on the model) or an ONNX runtime. Same decision as Portfolio RAG and for the same reason: keyword-heavy technical text where BM25 is competitive with or better than cosine similarity on sparse corpora.
 
 **Why mandatory citations:**
-Civic information is high-stakes for residents. Claiming "the council approved X" without a source is the same problem as hallucinated legal citations in P24 (Citation Checker). The citation system prompt in every Claude call enforces `[Governing Body, Date]` attribution for every claim — the user can verify against the source document.
+Civic information is high-stakes for residents. Claiming "the council approved X" without a source is the same problem as hallucinated legal citations in Citation Checker. The citation system prompt in every Claude call enforces `[Governing Body, Date]` attribution for every claim — the user can verify against the source document.
 
 **Why Tiverton, RI:**
 A real place with real stakes, close enough to be personally accountable for accuracy. Pre-seeded with real documents rather than scraped live — same discipline as GhostTrace using cached EDGAR filings rather than live queries. Reproducible, inspectable, no rate-limit surprises.
